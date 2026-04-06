@@ -1085,10 +1085,15 @@
         【底层原理】解决类组件逻辑复用难(HOC嵌套)、生命周期分散、this绑定复杂、相关逻辑割裂。基于调用顺序的状态链表。
         【代码示例】
         useState, useEffect, useContext, useReducer, useMemo, useCallback, useRef
+        useState()：状态管理钩子。通过在函数组件中调用 useState，就会创建一个单独的状态。
+        useEffect()：副作用钩子。它接收两个参数，第一个是进行的异步操作，第二个是数组，用来给出 Effect
+        的依赖项
+        useContext()：共享钩子。该钩子的作用是，在组件之间共享状态。
+        useReducer()：Action 钩子。useReducer()提供了状态管理，其基本原理是通过用户在页面中发起 action, 从而通过 reducer 方法来改变 state, 从而实现页面和状态的通信。
         【注意事项】遵守Rules of Hooks，不可条件/循环调用；自定义Hook提取复用逻辑。
         
         4. useState 的工作原理是什么？
-        【核心定义】函数组件状态管理Hook。
+        【核心定义】函数组件状态管理Hook。通过在函数组件中调用 useState，就会创建一个单独的状态。
         【底层原理】React内部维护状态链表，每次渲染按顺序读取。更新异步批处理，依赖前值需用函数形式。
         【代码示例】
         const [count, setCount] = useState(0);
