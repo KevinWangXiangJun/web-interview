@@ -1268,7 +1268,7 @@
             return <RouterProvider router={router} />;
           }
 
-        【注意事项】1. v5 → v6 核心差异：<Switch> → <Routes>；<Redirect> → <Navigate>；useHistory → useNavigate；移除 exact ；嵌套必须用 <Outlet>。2. 状态边界：路由参数（params/query）仅用于“可分享、可书签、影响 URL”的状态；复杂业务状态应交由 Zustand/Redux/Context 管理，避免 URL 参数爆炸。3. 性能优化：配合 React.lazy + Suspense 做路由级懒加载；重定向/登录跳转务必加 { replace: true } 防止浏览器历史记录死循环；路由组件避免内联对象/函数以防不必要的重渲染。4. 滚动恢复：官方未内置。需监听 useLocation 变化，手动执行 window.scrollTo(0,0) 或使用 react-router-scroll-restore。5. Data Router 优势：loader 在组件渲染前并发预取数据，彻底解决 useEffect 导致的页面闪烁与重复请求；内置 useNavigation() 可轻松实现全局 Loading 与 ErrorBoundary。
+        【注意事项】1. v5 → v6 核心差异：Switch → Routes；Redirect → Navigate；useHistory → useNavigate；移除 exact ；嵌套必须用 <Outlet>。2. 状态边界：路由参数（params/query）仅用于“可分享、可书签、影响 URL”的状态；复杂业务状态应交由 Zustand/Redux/Context 管理，避免 URL 参数爆炸。3. 性能优化：配合 React.lazy + Suspense 做路由级懒加载；重定向/登录跳转务必加 { replace: true } 防止浏览器历史记录死循环；路由组件避免内联对象/函数以防不必要的重渲染。4. 滚动恢复：官方未内置。需监听 useLocation 变化，手动执行 window.scrollTo(0,0) 或使用 react-router-scroll-restore。5. Data Router 优势：loader 在组件渲染前并发预取数据，彻底解决 useEffect 导致的页面闪烁与重复请求；内置 useNavigation() 可轻松实现全局 Loading 与 ErrorBoundary。
         
         21. 如何做 React 单元测试？
         【核心定义】验证组件行为。
