@@ -1218,7 +1218,15 @@
         【注意事项】适合数据获取与静态展示；交互组件标记'use client'；注意序列化边界。
         
         19. Redux 的核心概念有哪些？
-        【核心定义】可预测状态容器。
+        【核心定义】redux 是将整个应用的 state 存储在一个公共的 store 文件当中，组件可以通过分发（dispatch）一个动作
+          或者是行为（action）给这个公用的 store，而不是直接去通知其他组件，组件内部通过订阅 store 中的状
+          态 state 来刷新自己的视图。
+          1）唯一数据源
+          整个应用的数据存储在一个统一的状态树中，也就是公共的 store 文件。组件都会从这个 store 中获取数据。
+          2）保持只读状态
+          state 是只读的，唯一改变 state 的方法就是触发 action，action 是一个用于描述以发生时间的普通对象。
+          3）数据改变只能通过纯函数执行
+          使用纯函数来执行修改，为了描述 action 如何改变 state 的，需要编写 reducers。
         【底层原理】单一Store、Action描述变更、Reducer纯函数计算新状态、Dispatch唯一触发。单向数据流。
         【代码示例】
         const store = configureStore({ reducer: { counter } });
@@ -1226,12 +1234,61 @@
         【注意事项】用Redux Toolkit简化；简单状态用Context/useState；避免全局状态滥用。
         
         20. 什么是 React Router？如何使用？
-        【核心定义】声明式路由库。
-        【底层原理】History API同步URL与UI。BrowserRouter/Routes/Route/Link声明配置，useNavigate编程跳转，Outlet渲染嵌套。
-        【代码示例】
-        <Routes><Route path="/user/:id" element={<User/>}/></Routes>
-        navigate('/about');
-        【注意事项】v6废弃Switch用Routes；动态路由useParams；导航守卫用loader/action或包装组件。
+        【核心定义】React Router 是 React 生态的事实标准客户端路由库。核心作用：拦截浏览器 URL 变化，通过声明式组件动态匹配并渲染对应 UI，实现单页应用（SPA）的无刷新页面切换。
+          - 版本定位：当前主流为 v6 系列，全面采用 Hooks API 与树状嵌套设计；v6.4+ 官方强烈推荐 Data Router 模式（数据驱动路由）；v7 已与 Remix 框架深度融合，但 `react-router-dom` 独立包仍持续维护并兼容传统 React 项目。
+
+          【底层原理】
+          1. 依赖浏览器原生 History API：通过 `window.history.pushState/replaceState` 修改 URL 且不触发服务端请求。
+          2. 事件监听：内部监听 `popstate` 事件捕获浏览器前进/后退操作，同步更新路由状态。
+          3. 匹配算法：v6 使用 `<Routes>` 替代 v5 的 `<Switch>`，**默认精确匹配**，按声明顺序找到首个匹配的 `<Route>` 即停止遍历。
+          4. 渲染机制：路由本质是组件，匹配成功后渲染 `element` 属性指定的 React 节点；嵌套路由通过 `<Outlet />` 作为占位符动态注入子路由组件。
+
+          【代码示例】
+          // 推荐：v6.4+ Data Router 模式（createBrowserRouter）
+          import { createBrowserRouter, RouterProvider, Outlet, useNavigate, useParams, useSearchParams, Navigate } from 'react-router-dom';
+
+          // 1. 路由守卫（替代 v5 的 <Redirect>）
+          function ProtectedRoute({ children }) {
+            const isAuth = Boolean(localStorage.getItem('token'));
+            return isAuth ? children : <Navigate to="/login" replace />;
+          }
+
+          // 2. 嵌套布局组件（必须包含 <Outlet /> 渲染子路由）
+          function DashboardLayout() {
+            return <div className="layout"><nav>导航区</nav><main><Outlet /></main></div>;
+          }
+
+          // 3. 页面组件：动态参数 + 查询参数 + 编程式导航
+          function UserProfile() {
+            const { id } = useParams();
+            const [searchParams] = useSearchParams();
+            const navigate = useNavigate();
+            return <button onClick={() => navigate('/', { replace: true })}>用户:{id} | Tab:{searchParams.get('tab')}</button>;
+          }
+
+          // 4. 路由配置表（集中管理，支持 loader/action 预加载）
+          const router = createBrowserRouter([
+            { path: '/', element: <Home /> },
+            { path: '/login', element: <Login /> },
+            { path: '/user/:id', element: <ProtectedRoute><UserProfile /></ProtectedRoute> },
+            { path: '/dashboard', element: <DashboardLayout />, children: [
+              { index: true, element: <Overview /> },
+              { path: 'settings', element: <Settings /> }
+            ]},
+            { path: '*', element: <NotFound /> } // 404 兜底
+          ]);
+
+          // 5. 应用入口
+          export function App() {
+            return <RouterProvider router={router} />;
+          }
+
+          【注意事项】
+          1. v5 → v6 核心差异：`<Switch>`→`<Routes>`；`<Redirect>`→`<Navigate>`；`useHistory`→`useNavigate`；移除 `exact`；嵌套必须用 `<Outlet>`。
+          2. 状态边界：路由参数（params/query）仅用于“可分享、可书签、影响 URL”的状态；复杂业务状态应交由 Zustand/Redux/Context 管理，避免 URL 参数爆炸。
+          3. 性能优化：配合 `React.lazy` + `Suspense` 做路由级懒加载；重定向/登录跳转务必加 `{ replace: true }` 防止浏览器历史记录死循环；路由组件避免内联对象/函数以防不必要的重渲染。
+          4. 滚动恢复：官方未内置。需监听 `useLocation` 变化，手动执行 `window.scrollTo(0,0)` 或使用 `react-router-scroll-restore`。
+          5. Data Router 优势：`loader` 在组件渲染前并发预取数据，彻底解决 `useEffect` 导致的页面闪烁与重复请求；内置 `useNavigation()` 可轻松实现全局 Loading 与 ErrorBoundary。
         
         21. 如何做 React 单元测试？
         【核心定义】验证组件行为。
