@@ -2127,7 +2127,7 @@
     <main id="main-scroll" class="flex-1 min-w-0 w-full h-screen overflow-y-auto relative bg-[#f3f4f6]">
         <!-- 手机端悬浮小Top栏 -->
         <header class="md:hidden bg-white shadow-sm p-4 sticky top-0 z-30 flex items-center border-b border-gray-200">
-            <button id="open-sidebar" class="text-gray-600 focus:outline-none mr-2 hover:text-blue-500 transition-colors">
+            <button id="open-sidebar" class="text-gray-600 focus:outline-none mr-4 hover:text-blue-500 transition-colors">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
             <h2 class="text-lg font-bold text-gray-800 truncate">Web前端面试题库</h2>
@@ -2372,13 +2372,23 @@
             const openBtn = document.getElementById('open-sidebar');
             const closeBtn = document.getElementById('close-sidebar');
 
+            // 提前获取滚动容器，方便在 toggleSidebar 中控制截断滚动穿透
+            const mainScrollEl = document.getElementById('main-scroll');
+            const backToTopBtn = document.getElementById('back-to-top');
+
             function toggleSidebar(show) {
                 if (show) {
                     sidebar.classList.remove('sidebar-hidden');
                     overlay.classList.remove('hidden');
+                    // ★ 新增修复代码：当左侧目录抽屉出现时，给右侧主控制区套上 overflow-hidden 禁止其自由滚动
+                    mainScrollEl.classList.remove('overflow-y-auto');
+                    mainScrollEl.classList.add('overflow-hidden');
                 } else {
                     sidebar.classList.add('sidebar-hidden');
                     overlay.classList.add('hidden');
+                    // ★ 新增修复代码：当抽屉隐藏关闭时，恢复右侧主控制区的自由滚动 overflow-y-auto 
+                    mainScrollEl.classList.remove('overflow-hidden');
+                    mainScrollEl.classList.add('overflow-y-auto');
                 }
             }
 
@@ -2387,9 +2397,6 @@
             overlay.addEventListener('click', () => toggleSidebar(false));
 
             // 返回最上方
-            const mainScrollEl = document.getElementById('main-scroll');
-            const backToTopBtn = document.getElementById('back-to-top');
-
             mainScrollEl.addEventListener('scroll', () => {
                 if (mainScrollEl.scrollTop > 400) {
                     backToTopBtn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
