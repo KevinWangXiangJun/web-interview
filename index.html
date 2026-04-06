@@ -27,6 +27,16 @@
             scroll-behavior: smooth;
         }
 
+        .sidebar {
+            /* 确保它有固定的高度限制并开启超出滚动 */
+            height: 100dvh; /* 或者 100vh */
+            overflow-y: auto; /* 允许在内容过多时纵向滚动 */
+            overflow-x: hidden;
+            /* 解决遮挡问题的宽度限制：移动端不要写死过大宽度 */
+            max-width: 85%; /* 建议最大宽度限制 */
+            width: 300px;
+        }
+
         /* 移动端侧边栏滑出样式 */
         .sidebar-hidden {
             transform: translateX(-100%);
@@ -65,6 +75,26 @@
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
             font-size: 0.875rem;
             line-height: 1.6;
+        }
+
+        /* 全局防溢出保护 */
+        body, html {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* 针对代码块开启内部横向滚动，避免撑破外层布局 */
+        pre, code {
+            max-width: 100%;
+            overflow-x: auto; /* 若代码过长，仅在这个框内横向滚动 */
+            white-space: pre-wrap; /* 或者折行显示 */
+            word-wrap: break-word;
+        }
+
+        /* 防止长单词/链接撑开父元素 */
+        p, div {
+            overflow-wrap: break-word;
+            word-wrap: break-word;
         }
     </style>
 </head>
@@ -2054,7 +2084,7 @@
     </textarea>
 
     <!-- 左侧固定边栏 -->
-    <aside id="sidebar" class="bg-[#1e2329] text-gray-300 w-80 flex-shrink-0 fixed inset-y-0 left-0 z-50 md:relative md:translate-x-0 sidebar-hidden md:flex flex-col transition-transform duration-300 ease-in-out shadow-xl">
+    <aside id="sidebar" class="bg-[#1e2329] text-gray-300 w-80 flex-shrink-0 fixed inset-y-0 left-0 z-50 md:relative md:translate-x-0 sidebar sidebar-hidden md:flex flex-col transition-transform duration-300 ease-in-out shadow-xl">
         <!-- 面板头部 -->
         <div class="p-6 bg-[#161a1f] flex justify-between items-center border-b border-[#2d333b]">
             <div>
@@ -2109,7 +2139,7 @@
         </div>
 
         <!-- 滑动到顶部按钮 -->
-        <button id="back-to-top" class="fixed bottom-10 right-10 bg-blue-600 text-white p-3.5 rounded-full shadow-[0_4px_14px_rgba(37,99,235,0.5)] opacity-0 pointer-events-none transition-all duration-300 hover:bg-blue-700 focus:outline-none z-30 hover:-translate-y-1">
+        <button id="back-to-top" class="fixed bottom-8 right-6 bg-blue-600 text-white p-3.5 rounded-full shadow-[0_4px_14px_rgba(37,99,235,0.5)] opacity-0 pointer-events-none transition-all duration-300 hover:bg-blue-700 focus:outline-none z-30 hover:-translate-y-1">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
         </button>
     </main>
