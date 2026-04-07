@@ -1520,12 +1520,31 @@
 
         七、Webpack核心与进阶
         1. Webpack 的核心概念是什么？
-        【核心定义】模块打包工具，将各类资源转换为浏览器可用的静态文件。
+        【核心定义】Webpack 是一个现代化的前端模块打包工具（module bundler），主要用于将项目中的各种资源（如JavaScript、CSS、图片、字体等）视为模块，并通过依赖关系图（dependency graph）将它们打包成一个或多个优化后的静态资源文件。
         【底层原理】五大核心：Entry（入口构建依赖图）、Output（输出路径与命名）、Loader（文件转换器）、Plugin（生命周期扩展器）、Mode（开发/生产模式优化）。
         【代码示例】
-        entry: './src/index.js'
-        output: { filename: '[name].[contenthash].js', path: path.resolve(__dirname, 'dist') }
-        module: { rules: [{ test: /.css$/, use: ['style-loader', 'css-loader'] }] }
+          1、Entry（入口）
+          module.exports = {
+          entry: './src/index.js' }
+          2、Output（输出）
+          module.exports = {
+          output: {
+          filename: 'bundle.js', path: path.resolve(__dirname, 'dist')
+          }
+          };
+          3、Loaders（加载器）
+          Webpack 默认只理解 JavaScript。要处理其他类型文件（如 .css、.vue、.png），需使用 loader。
+          4、Plugins（插件）
+          用于执行更广泛的任务，如压缩、提取 CSS、生成 HTML 文件等。
+          5、Mode（模式）
+          可设为 development 或 production，自动启用相应优化。
+          安装 webpack-dev-server 实现热更新。
+          React：配合 babel-loader + @babel/preset-react
+          优势：
+          模块化管理（支持 CommonJS、ESM、AMD 等）
+          资源优化（压缩、Tree Shaking、懒加载）
+          生态丰富（大量 loader 和 plugin）
+          与现代框架（React/Vue/Angular）深度集成
         【注意事项】Loader处理单个文件类型，Plugin执行复杂任务；生产模式自动开启压缩与优化。
         
         2. Loader 和 Plugin 的区别是什么？
