@@ -1319,7 +1319,7 @@
           state.arr.push(3)    // ✅ 数组方法原生支持
           // Vue2 需 this.$set(state, 'b', 2) 且数组需重写方法
 
-        【注意事项】1. 范式选择：Vue3 完全兼容 Options API，但中大型项目/复杂逻辑强烈推荐 Composition API（`<script setup>` 语法糖）。逻辑复用从 `Mixin`（命名冲突、来源不清）升级为 `Composables`（函数组合、类型安全）。2. TypeScript 支持：Vue3 源码全量 TS 重写，配合 `script setup` 可实现完整的类型推导；Vue2 需依赖 `vue-class-component` 或复杂泛型配置，类型推断薄弱。3. 全局 API 与 Tree-shaking：Vue2 全局挂载 `Vue.prototype`/`Vue.use` 导致无法按需剔除；Vue3 改为 `createApp()` 实例化 + 按需导入（如 `import { ref, computed } from 'vue'`），未使用模块可被打包工具安全移除，体积减少 ~41%。4. 多根节点与内置组件：Vue2 强制单根节点；Vue3 支持 Fragment（多根）、`Teleport`（DOM 传送门）、`Suspense`（异步组件加载态）、`KeepAlive` 支持 `include/exclude` 正则匹配。5. 迁移建议：老项目可用 `@vue/compat` 渐进式迁移；注意 `v-model` 默认 prop 从 `value` 改为 `modelValue`，`v-bind.sync` 已废弃；`$children` 等非稳定 API 已移除，需改用 `ref` 或 provide/inject。
+        【注意事项】1. 范式选择：Vue3 完全兼容 Options API，但中大型项目/复杂逻辑强烈推荐 Composition API（`script setup` 语法糖）。逻辑复用从 `Mixin`（命名冲突、来源不清）升级为 `Composables`（函数组合、类型安全）。Mixin 存在命名空间污染、数据来源不透明、TS 类型推导断裂三大硬伤，Composables 通过纯函数组合彻底解决。2. TypeScript 支持：Vue3 源码全量 TS 重写，配合 `script setup` 可实现完整的类型推导；Vue2 需依赖 `vue-class-component` 或复杂泛型配置，类型推断薄弱。3. 全局 API 与 Tree-shaking：Vue2 全局挂载 `Vue.prototype`/`Vue.use` 导致无法按需剔除；Vue3 改为 `createApp()` 实例化 + 按需导入（如 `import { ref, computed } from 'vue'`），未使用模块可被打包工具安全移除，体积减少 ~41%。4. 多根节点与内置组件：Vue2 强制单根节点；Vue3 支持 Fragment（多根）、`Teleport`（DOM 传送门）、`Suspense`（异步组件加载态）、`KeepAlive` 支持 `include/exclude` 正则匹配。5. 迁移建议：老项目可用 `@vue/compat` 渐进式迁移；注意 `v-model` 默认 prop 从 `value` 改为 `modelValue`，`v-bind.sync` 已废弃；`$children` 等非稳定 API 已移除，需改用 `ref` 或 provide/inject。
         
         2. 什么是 Composition API？为什么需要它？
         【核心定义】基于函数的逻辑组织方式。
