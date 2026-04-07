@@ -1341,13 +1341,28 @@
         【注意事项】顶层自动暴露；props/emits用define宏；this不可用。
         
         4. ref 和 reactive 有什么区别？
-        【核心定义】响应式数据创建方式。
-        【底层原理】ref适用任意类型需.value访问，可替换整体；reactive仅对象直接访问，替换丢失响应式。ref底层对对象用Proxy包装。
+        【核心定义】`ref` 是全能型响应式 API，支持任意数据类型（基础类型、对象、数组等），JS 中通过 `.value` 访问；`reactive` 是对象专用型，仅支持引用类型（对象、数组、Map/Set 等），直接读写属性。核心差异：`ref` 靠 `.value` 拦截，`reactive` 靠对象属性拦截。
+        【底层原理】- 两者底层均基于 ES6 `Proxy` 实现响应式。- `ref`：若传入基础类型，内部包装为 `{ value: xxx }` 对象，拦截 `.value` 的 getter/setter；若传入对象，自动调用 `reactive` 转换。- `reactive`：直接对传入的对象/数组创建 `Proxy` 拦截器，递归代理所有嵌套属性，无额外包装层。- 关键点：`ref` 的响应式绑定在 `.value` 上；`reactive` 的响应式绑定在对象根节点及深层属性上。
         【代码示例】
-        const count = ref(0); count.value++;
-        const state = reactive({ count: 0 }); state.count++;
-        【注意事项】优先统一用ref减少心智负担；reactive解构需用toRefs；避免直接替换reactive对象。
-        
+          import { ref, reactive } from 'vue'
+
+          // ref：任意类型，JS 中必带 .value
+          const count = ref(0)
+          count.value++          // ✅ 基础类型
+          const user = ref({ name: 'A' })
+          user.value.name = 'B'  // ✅ 对象类型
+
+          // reactive：仅限对象/数组，直接操作
+          const state = reactive({ count: 0, list: [1, 2] })
+          state.count++          // ✅ 直接读写
+          state.list.push(3)     // ✅ 数组方法
+
+          // 替换行为差异
+          count.value = 10       // ✅ ref 整体替换仍保持响应式
+          // state = { count: 5 } // ❌ reactive 整体赋值会切断 Proxy，丢失响应式！
+
+        【注意事项】1. 模板中 `ref` 自动解包，永远不用写 `.value`；`reactive` 也无需特殊处理。2. `reactive` 严禁整体重新赋值（如 `state = {}`），会破坏 Proxy 连接。如需替换数据，用 `Object.assign(state, newData)` 或干脆改用 `ref`。3. 开发建议：官方及社区推荐**优先统一使用 `ref`**。心智负担最小、类型推导更稳，且 Vue 编译器已做充分优化；`reactive` 仅用于结构稳定、明确不需要整体替换的复杂对象。4. 解构警告：`const { count } = reactive(...)` 会丢失响应式，需配合 `toRefs()`；`ref` 解构前也需用 `toRefs` 或保持原对象引用。
+                  
         5. computed 和 watch 有什么区别？
         【核心定义】响应式派生与副作用监听。
         【底层原理】computed派生状态带缓存(依赖不变复用)；watch监听变化执行副作用(支持异步/深度监听)。
